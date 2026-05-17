@@ -5,19 +5,20 @@ import com.recruitment.service.JobFairService;
 import com.recruitment.service.RegistrationService;
 import com.recruitment.vo.JobFairListVO;
 import com.recruitment.vo.RegistrationDetailVO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 招聘会 API — 学生端浏览，无需登录
- */
+@Tag(name = "学生端", description = "学生公开浏览，无需登录")
 @RestController
 @RequestMapping("/api/job-fair")
 public class JobFairController {
@@ -28,13 +29,13 @@ public class JobFairController {
     @Resource
     private RegistrationService registrationService;
 
-    /** 学生端：查看所有已发布的招聘会 */
+    @Operation(summary = "浏览已发布的招聘会列表")
     @GetMapping("/list")
     public Result<List<JobFairListVO>> list() {
         return Result.ok(jobFairService.listPublished());
     }
 
-    /** 学生端：查看某场招聘会的详情 + 参会企业 */
+    @Operation(summary = "查看招聘会详情 + 参会企业及岗位")
     @GetMapping("/{id}")
     public Result<Map<String, Object>> detail(@PathVariable Long id) {
         JobFairListVO fair = jobFairService.getById(id);
