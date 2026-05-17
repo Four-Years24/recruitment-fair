@@ -63,6 +63,13 @@
             <version>5.2.3</version>
         </dependency>
 
+        <!-- AOP (AspectJ) -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.9.22</version>
+        </dependency>
+
         <!-- Spring Cache + Caffeine -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
