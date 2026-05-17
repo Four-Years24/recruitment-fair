@@ -16,7 +16,10 @@ import jakarta.annotation.Resource;
 //        因为密码要 BCrypt 加密，SQL 做不到
 //        最佳方案：用 Spring Boot 的 CommandLineRunner 钩子
 // ============================================================
-@Component  // ← 让 Spring 管理这个类
+import org.springframework.context.annotation.Profile;
+
+@Profile("!test")  // 测试环境不执行，避免 DataInitializer 先于 @Sql 建表时报错
+@Component
 public class DataInitializer implements CommandLineRunner {
     // [思维] CommandLineRunner 是 Spring Boot 的内置接口
     //        实现它 → 项目启动完成后自动执行 run() 方法

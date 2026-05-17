@@ -1,0 +1,18 @@
+# 集成测试专用配置 — H2 内存数据库
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:recruitment_test;DB_CLOSE_DELAY=-1;MODE=MYSQL
+    username: sa
+    password:
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.recruitment.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+# JWT（测试用）
+jwt:
+  secret: test-secret-key-for-integration-testing-only
+  expiration: 3600000
