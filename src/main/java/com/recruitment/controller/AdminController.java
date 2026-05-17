@@ -9,12 +9,14 @@ import com.recruitment.dto.RegistrationPageDTO;
 import com.recruitment.service.AdminService;
 import com.recruitment.service.JobFairService;
 import com.recruitment.service.RegistrationService;
+import com.recruitment.config.LoginRateLimiter;
 import com.recruitment.util.JwtUtil;
 import com.recruitment.vo.JobFairListVO;
 import com.recruitment.vo.RegistrationDetailVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,19 +52,36 @@ public class AdminController {
     @Resource
     private JwtUtil jwtUtil;
 
+    @Resource
+    private LoginRateLimiter rateLimiter;
+
 
     // ==================== 登录 ====================
-    @Operation(summary = "管理员登录", description = "返回 JWT token，24小时有效，后续请求在 Header 中携带")
+    @Operation(summary = "管理员登录", description = "返回 JWT token，24小时有效。同一IP连续5次失败锁定15分钟")
     @PostMapping("/login")
-    public Result<Map<String, String>> login(@Valid @RequestBody AdminLoginDTO dto) {
-        String username = adminService.login(dto);
-        String token = jwtUtil.generateToken(username);
+    public Result<Map<String, String>> login(@Valid @RequestBody AdminLoginDTO dto,
+                                              HttpServletRequest request) {
+        String ip = request.getRemoteAddr();
 
-        Map<String, String> data = new HashMap<>();
-        data.put("username", username);
-        data.put("token", token);
+        // 检查是否被锁定
+        if (rateLimiter.isLocked(ip)) {
+            long seconds = rateLimiter.getRemainingLockSeconds(ip);
+            return Result.fail(429, "登录尝试过于频繁，请" + seconds + "秒后再试");
+        }
 
-        return Result.ok(data);
+        try {
+            String username = adminService.login(dto);
+            String token = jwtUtil.generateToken(username);
+            rateLimiter.clear(ip);  // 成功后清除失败记录
+
+            Map<String, String> data = new HashMap<>();
+            data.put("username", username);
+            data.put("token", token);
+            return Result.ok(data);
+        } catch (Exception e) {
+            rateLimiter.recordFailure(ip);  // 记录失败
+            throw e;
+        }
     }
 
 
