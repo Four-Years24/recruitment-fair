@@ -1,5 +1,7 @@
 package com.recruitment.controller;
 
+import com.recruitment.dto.CompanyRegisterDTO;
+import com.recruitment.service.CompanyService;
 import com.recruitment.service.JobFairService;
 import com.recruitment.service.RegistrationService;
 import jakarta.annotation.Resource;
@@ -7,6 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.ArrayList;
 
 @Controller
 public class PageController {
@@ -16,6 +22,9 @@ public class PageController {
 
     @Resource
     private RegistrationService registrationService;
+
+    @Resource
+    private CompanyService companyService;
 
     @GetMapping("/fairs")
     public String index(Model model) {
@@ -30,5 +39,28 @@ public class PageController {
         model.addAttribute("companies", registrationService.getByJobFairId(id));
         model.addAttribute("currentPage", "fairs");
         return "fair-detail";
+    }
+
+    /** 企业报名表单页 */
+    @GetMapping("/fairs/{id}/register")
+    public String registerForm(@PathVariable Long id, Model model) {
+        model.addAttribute("fair", jobFairService.getById(id));
+        model.addAttribute("currentPage", "fairs");
+        return "company-register";
+    }
+
+    /** 提交报名 */
+    @PostMapping("/fairs/{id}/register")
+    public String doRegister(@PathVariable Long id, CompanyRegisterDTO dto,
+                             RedirectAttributes redirect) {
+        dto.setJobFairId(id);
+        // 过滤掉空的岗位（用户可能没填满3个）
+        if (dto.getPositions() != null) {
+            dto.getPositions().removeIf(p ->
+                p.getTitle() == null || p.getTitle().isBlank());
+        }
+        companyService.register(dto);
+        redirect.addFlashAttribute("success", "报名成功，请等待管理员审核");
+        return "redirect:/fairs/" + id;
     }
 }

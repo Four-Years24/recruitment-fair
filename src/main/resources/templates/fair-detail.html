@@ -12,6 +12,8 @@
     <div class="container mt-4">
         <a href="/fairs" class="btn btn-outline-secondary btn-sm mb-3">&larr; 返回列表</a>
 
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
         <div class="card mb-4">
             <div class="card-body">
                 <h3 th:text="${fair.title}">招聘会名称</h3>
@@ -19,6 +21,8 @@
                    ~ <span th:text="${#temporals.format(fair.endTime, 'yyyy-MM-dd HH:mm')}"></span></p>
                 <p>地点: <span th:text="${fair.location}">地点</span></p>
                 <p th:if="${fair.description}" th:text="${fair.description}"></p>
+                <a th:href="@{/fairs/{id}/register(id=${fair.id})}"
+                   class="btn btn-primary">我要报名</a>
             </div>
         </div>
 
