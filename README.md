@@ -1,5 +1,7 @@
 # 校园招聘会管理系统
 
+[![测试](https://github.com/Four-Years24/recruitment-fair/actions/workflows/test.yml/badge.svg)](https://github.com/Four-Years24/recruitment-fair/actions/workflows/test.yml)
+
 Spring Boot + MyBatis + JWT 全栈后端项目，解决校园招聘会企业报名与审核管理。
 
 ## 技术栈
