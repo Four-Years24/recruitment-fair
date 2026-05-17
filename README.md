@@ -87,13 +87,24 @@ Authorization: Bearer <登录返回的token>
 
 ## 运行项目
 
-### 1. 环境要求
+### 方式一：Docker（推荐）
+
+```bash
+docker-compose up
+```
+
+自动启动 MySQL 8.4 + 应用，首次启动自动建表。
+访问 http://localhost:8080/swagger-ui/index.html
+
+### 方式二：本地运行
+
+#### 1. 环境要求
 
 - JDK 17+
 - MySQL 8.0+
 - Maven 3.6+
 
-### 2. 创建数据库
+#### 2. 创建数据库
 
 ```sql
 CREATE DATABASE IF NOT EXISTS recruitment_fair

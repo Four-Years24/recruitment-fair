@@ -1,0 +1,42 @@
+# ============================================================
+# [编写顺序 Docker-2] docker-compose — 一键启动整个系统
+# [思维] compose = 编排多个容器协同工作
+#        这里编排两个：MySQL（数据库）+ app（Spring Boot）
+#        一条命令 docker-compose up → 全部启动
+# ============================================================
+
+services:
+  # ---------- MySQL 数据库 ----------
+  mysql:
+    image: mysql:8.4
+    container_name: recruitment-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: recruitment_fair
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql          # 数据持久化，容器删了数据不丢
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql  # 首次启动自动建表
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------- Spring Boot 应用 ----------
+  app:
+    build: .
+    container_name: recruitment-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/recruitment_fair?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 123456
+    depends_on:
+      mysql:
+        condition: service_healthy  # 等 MySQL 就绪后再启动应用
+
+volumes:
+  mysql-data:
