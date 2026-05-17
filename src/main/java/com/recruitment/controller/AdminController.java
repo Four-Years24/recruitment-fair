@@ -9,6 +9,7 @@ import com.recruitment.dto.RegistrationPageDTO;
 import com.recruitment.service.AdminService;
 import com.recruitment.service.JobFairService;
 import com.recruitment.service.RegistrationService;
+import com.recruitment.util.JwtUtil;
 import com.recruitment.vo.JobFairListVO;
 import com.recruitment.vo.RegistrationDetailVO;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,26 +57,25 @@ public class AdminController {
     @Resource
     private RegistrationService registrationService;
 
+    @Resource
+    private JwtUtil jwtUtil;
+
 
     // ==================== 登录 ====================
-    // [顺序 6.1.2] 第一个接口：管理员登录
-    // [思维] POST 方法：因为登录是"提交"动作，且密码在 Body 里比在 URL 参数里安全
-    //        @Valid：触发 Jakarta Validation，检查 DTO 里 @NotBlank 的字段
-    //                如果 username 为空，框架直接返回 400，不会进方法体
-    //        @RequestBody：把 HTTP Body 的 JSON 自动转成 AdminLoginDTO 对象
+    // [顺序 JWT-4] 登录接口 — 返回真 JWT token
+    // [改动] 用 JwtUtil 生成 token 替代原来的假 token
     @PostMapping("/login")
     public Result<Map<String, String>> login(@Valid @RequestBody AdminLoginDTO dto) {
-        // [顺序 6.1.3] 调 Service 登录方法
-        //             Service 返回用户名（说明登录成功）
-        //             如果失败 Service 会抛异常，GlobalExceptionHandler 自动捕获
         String username = adminService.login(dto);
 
-        // [顺序 6.1.4] 组装返回数据
-        //             用 Map 而非单独创建 TokenVO，因为 MVP 阶段够用
-        //             token 是假的，工业级应该用 JWT
+        // [顺序 JWT-4.1] 调用 JwtUtil 生成真实 JWT
+        //             token 包含用户名 + 过期时间 + 签名
+        //             24 小时后自动过期，需要重新登录
+        String token = jwtUtil.generateToken(username);
+
         Map<String, String> data = new HashMap<>();
         data.put("username", username);
-        data.put("token", "session-token-" + username);
+        data.put("token", token);
 
         // [顺序 6.1.5] 包装成统一格式返回
         return Result.ok(data);

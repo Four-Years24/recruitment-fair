@@ -15,6 +15,11 @@ mybatis:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+# JWT 配置
+jwt:
+  secret: recruitment-fair-system-2026-spring-boot-jwt-secret-key
+  expiration: 86400000  # 24小时，单位毫秒
+
 logging:
   level:
     com.recruitment: debug
