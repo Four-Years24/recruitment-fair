@@ -20,6 +20,10 @@
         SELECT * FROM job_fair WHERE id = #{id}
     </select>
 
+    <select id="findByTitle" resultMap="jobFairMap">
+        SELECT * FROM job_fair WHERE title = #{title}
+    </select>
+
     <select id="findPublished" resultMap="jobFairMap">
         SELECT * FROM job_fair WHERE status = 1 ORDER BY start_time DESC
     </select>

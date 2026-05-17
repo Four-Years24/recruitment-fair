@@ -12,6 +12,8 @@ public interface JobFairMapper {
 
     JobFair findById(Long id);
 
+    JobFair findByTitle(String title);
+
     List<JobFair> findPublished();
 
     List<JobFair> findAll();

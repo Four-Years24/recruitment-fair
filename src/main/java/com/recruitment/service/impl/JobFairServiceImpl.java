@@ -27,6 +27,12 @@ public class JobFairServiceImpl implements JobFairService {
             throw new BusinessException("结束时间不能早于开始时间");
         }
 
+        // 同名招聘会不允许重复创建
+        JobFair existing = jobFairMapper.findByTitle(dto.getTitle());
+        if (existing != null) {
+            throw new BusinessException("同名招聘会已存在，请使用其他名称");
+        }
+
         JobFair jobFair = new JobFair();
         jobFair.setTitle(dto.getTitle());
         jobFair.setStartTime(dto.getStartTime());
@@ -46,6 +52,11 @@ public class JobFairServiceImpl implements JobFairService {
         }
         if (dto.getEndTime().isBefore(dto.getStartTime())) {
             throw new BusinessException("结束时间不能早于开始时间");
+        }
+        // 改名时检查是否与其他招聘会重名
+        JobFair sameName = jobFairMapper.findByTitle(dto.getTitle());
+        if (sameName != null && !sameName.getId().equals(id)) {
+            throw new BusinessException("同名招聘会已存在");
         }
 
         jobFair.setTitle(dto.getTitle());
