@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-
 @Controller
 public class PageController {
 
@@ -25,6 +23,8 @@ public class PageController {
 
     @Resource
     private CompanyService companyService;
+
+    // ==================== 学生端 ====================
 
     @GetMapping("/fairs")
     public String index(Model model) {
@@ -41,26 +41,32 @@ public class PageController {
         return "fair-detail";
     }
 
-    /** 企业报名表单页 */
-    @GetMapping("/fairs/{id}/register")
-    public String registerForm(@PathVariable Long id, Model model) {
-        model.addAttribute("fair", jobFairService.getById(id));
-        model.addAttribute("currentPage", "fairs");
+    // ==================== 企业端 ====================
+
+    @GetMapping("/company/register")
+    public String companyHome(Model model) {
+        model.addAttribute("fairs", jobFairService.listPublished());
+        model.addAttribute("currentPage", "register");
+        return "company-home";
+    }
+
+    @GetMapping("/company/register/{fairId}")
+    public String registerForm(@PathVariable Long fairId, Model model) {
+        model.addAttribute("fair", jobFairService.getById(fairId));
+        model.addAttribute("currentPage", "register");
         return "company-register";
     }
 
-    /** 提交报名 */
-    @PostMapping("/fairs/{id}/register")
-    public String doRegister(@PathVariable Long id, CompanyRegisterDTO dto,
+    @PostMapping("/company/register/{fairId}")
+    public String doRegister(@PathVariable Long fairId, CompanyRegisterDTO dto,
                              RedirectAttributes redirect) {
-        dto.setJobFairId(id);
-        // 过滤掉空的岗位（用户可能没填满3个）
+        dto.setJobFairId(fairId);
         if (dto.getPositions() != null) {
             dto.getPositions().removeIf(p ->
                 p.getTitle() == null || p.getTitle().isBlank());
         }
         companyService.register(dto);
         redirect.addFlashAttribute("success", "报名成功，请等待管理员审核");
-        return "redirect:/fairs/" + id;
+        return "redirect:/company/register/" + fairId;
     }
 }

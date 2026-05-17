@@ -11,7 +11,11 @@
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" th:classappend="${currentPage == 'fairs'} ? 'active'"
-                           href="/fairs">招聘会列表</a>
+                           href="/fairs">学生浏览</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${currentPage == 'register'} ? 'active'"
+                           href="/company/register">企业报名</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">

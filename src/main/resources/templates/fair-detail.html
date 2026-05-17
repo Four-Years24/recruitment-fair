@@ -21,8 +21,6 @@
                    ~ <span th:text="${#temporals.format(fair.endTime, 'yyyy-MM-dd HH:mm')}"></span></p>
                 <p>地点: <span th:text="${fair.location}">地点</span></p>
                 <p th:if="${fair.description}" th:text="${fair.description}"></p>
-                <a th:href="@{/fairs/{id}/register(id=${fair.id})}"
-                   class="btn btn-primary">我要报名</a>
             </div>
         </div>
 

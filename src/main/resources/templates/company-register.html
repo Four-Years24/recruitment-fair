@@ -9,13 +9,13 @@
     <th:block th:replace="~{fragments/header :: header('fairs')}"></th:block>
 
     <div class="container mt-4" style="max-width:700px">
-        <a th:href="@{/fairs/{id}(id=${fair.id})}" class="btn btn-outline-secondary btn-sm mb-3">&larr; 返回详情</a>
+        <a href="/company/register" class="btn btn-outline-secondary btn-sm mb-3">&larr; 返回选择招聘会</a>
 
         <div class="alert alert-info">
             报名参加：<strong th:text="${fair.title}"></strong>
         </div>
 
-        <form method="post" th:action="@{/fairs/{id}/register(id=${fair.id})}">
+        <form method="post" th:action="@{/company/register/{fairId}(fairId=${fair.id})}">
             <!-- 企业基本信息 -->
             <h5 class="mb-3">企业信息</h5>
             <div class="row mb-3">

@@ -47,8 +47,9 @@ class JwtUtilTest {
     @DisplayName("篡改过的 token 验证失败")
     void shouldRejectTamperedToken() {
         String token = jwtUtil.generateToken("admin");
-        // 改 token 最后一个字符，模拟篡改
-        String tampered = token.substring(0, token.length() - 1) + "X";
+        // 在中间位置插入一个字符，破坏签名
+        int mid = token.length() / 2;
+        String tampered = token.substring(0, mid) + "X" + token.substring(mid);
 
         assertFalse(jwtUtil.validateToken(tampered));
     }
