@@ -25,6 +25,13 @@ public class PageController {
     @Resource
     private CompanyService companyService;
 
+    // ==================== 根路径 ====================
+
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/fairs";
+    }
+
     // ==================== 学生端 ====================
 
     @GetMapping("/fairs")

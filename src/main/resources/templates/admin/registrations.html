@@ -8,7 +8,11 @@
 <body>
     <th:block th:replace="~{fragments/admin-header :: adminHeader('registrations')}"></th:block>
     <div class="container mt-4">
-        <h3>报名审核</h3>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">报名审核</h3>
+            <a th:href="@{/api/admin/registration/export(companyName=${dto?.companyName}, status=${dto?.status}, jobFairId=${dto?.jobFairId})}"
+               class="btn btn-outline-success btn-sm">导出 Excel</a>
+        </div>
 
         <!-- 筛选表单 -->
         <form class="row g-3 mb-4" method="get" action="/admin/registrations">
