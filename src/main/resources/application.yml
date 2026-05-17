@@ -1,25 +1,23 @@
+# ============================================================
+# 公共配置 — 所有环境共享
+# 开发环境启动:  mvn spring-boot:run -Dspring-boot.run.profiles=dev
+# 生产环境启动:  java -jar app.jar --spring.profiles.active=prod
+# ============================================================
+
 server:
   port: 8080
 
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/recruitment_fair?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8&allowPublicKeyRetrieval=true
-    username: root
-    password: 123456
+  profiles:
+    active: dev  # 默认使用开发环境
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.recruitment.entity
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-# JWT 配置
+# JWT 配置（所有环境相同）
 jwt:
   secret: recruitment-fair-system-2026-spring-boot-jwt-secret-key
-  expiration: 86400000  # 24小时，单位毫秒
-
-logging:
-  level:
-    com.recruitment: debug
+  expiration: 86400000  # 24小时

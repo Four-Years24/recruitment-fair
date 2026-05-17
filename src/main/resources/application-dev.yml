@@ -1,0 +1,15 @@
+# 开发环境
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/recruitment_fair?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 开发环境打印 SQL
+
+logging:
+  level:
+    com.recruitment: debug  # 开发环境详细日志
