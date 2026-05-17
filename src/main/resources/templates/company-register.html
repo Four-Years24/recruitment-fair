@@ -11,7 +11,10 @@
     <div class="container mt-4" style="max-width:700px">
         <a href="/company/register" class="btn btn-outline-secondary btn-sm mb-3">&larr; 返回选择招聘会</a>
 
-        <div class="alert alert-info">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div th:unless="${success}" class="alert alert-info">
             报名参加：<strong th:text="${fair.title}"></strong>
         </div>
 

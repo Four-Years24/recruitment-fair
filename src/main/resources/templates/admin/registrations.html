@@ -50,8 +50,36 @@
             </tbody>
         </table>
 
-        <p class="text-muted">共 <span th:text="${page.total}"></span> 条记录，
-           第 <span th:text="${page.pageNum}"></span>/<span th:text="${page.totalPages}"></span> 页</p>
+        <!-- 分页导航 -->
+        <nav th:if="${page.totalPages > 1}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${page.pageNum <= 1} ? 'disabled'">
+                    <a class="page-link" th:if="${page.pageNum > 1}"
+                       th:href="@{/admin/registrations(pageNum=${page.pageNum - 1}, pageSize=${page.pageSize},
+                           companyName=${dto?.companyName}, status=${dto?.status}, jobFairId=${dto?.jobFairId})}">
+                        上一页
+                    </a>
+                    <span class="page-link" th:if="${page.pageNum <= 1}">上一页</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        第 <span th:text="${page.pageNum}"></span>/<span th:text="${page.totalPages}"></span> 页
+                        （共 <span th:text="${page.total}"></span> 条）
+                    </span>
+                </li>
+                <li class="page-item" th:classappend="${page.pageNum >= page.totalPages} ? 'disabled'">
+                    <a class="page-link" th:if="${page.pageNum < page.totalPages}"
+                       th:href="@{/admin/registrations(pageNum=${page.pageNum + 1}, pageSize=${page.pageSize},
+                           companyName=${dto?.companyName}, status=${dto?.status}, jobFairId=${dto?.jobFairId})}">
+                        下一页
+                    </a>
+                    <span class="page-link" th:if="${page.pageNum >= page.totalPages}">下一页</span>
+                </li>
+            </ul>
+        </nav>
+        <p th:if="${page.totalPages <= 1}" class="text-muted text-center">
+            共 <span th:text="${page.total}"></span> 条记录
+        </p>
     </div>
     <th:block th:replace="~{fragments/footer :: footer}"></th:block>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

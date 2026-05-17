@@ -94,8 +94,12 @@ public class AdminPageController {
     public String createJobFair(JobFairCreateDTO dto, HttpSession session,
                                 RedirectAttributes redirect) {
         if (session.getAttribute("adminUser") == null) return "redirect:/admin/login";
-        jobFairService.create(dto);
-        redirect.addFlashAttribute("success", "招聘会创建成功");
+        try {
+            jobFairService.create(dto);
+            redirect.addFlashAttribute("success", "招聘会创建成功");
+        } catch (BusinessException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/job-fairs";
     }
 
@@ -110,8 +114,12 @@ public class AdminPageController {
     public String updateJobFair(@PathVariable Long id, JobFairCreateDTO dto,
                                 HttpSession session, RedirectAttributes redirect) {
         if (session.getAttribute("adminUser") == null) return "redirect:/admin/login";
-        jobFairService.update(id, dto);
-        redirect.addFlashAttribute("success", "招聘会更新成功");
+        try {
+            jobFairService.update(id, dto);
+            redirect.addFlashAttribute("success", "招聘会更新成功");
+        } catch (BusinessException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/admin/job-fairs";
     }
 

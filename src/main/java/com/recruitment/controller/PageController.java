@@ -1,5 +1,6 @@
 package com.recruitment.controller;
 
+import com.recruitment.common.BusinessException;
 import com.recruitment.dto.CompanyRegisterDTO;
 import com.recruitment.service.CompanyService;
 import com.recruitment.service.JobFairService;
@@ -65,8 +66,12 @@ public class PageController {
             dto.getPositions().removeIf(p ->
                 p.getTitle() == null || p.getTitle().isBlank());
         }
-        companyService.register(dto);
-        redirect.addFlashAttribute("success", "报名成功，请等待管理员审核");
+        try {
+            companyService.register(dto);
+            redirect.addFlashAttribute("success", "报名成功，请等待管理员审核");
+        } catch (BusinessException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/company/register/" + fairId;
     }
 }
