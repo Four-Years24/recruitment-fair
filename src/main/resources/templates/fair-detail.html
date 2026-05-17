@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${fair.title} + ' - 校园招聘会'">招聘会详情</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <th:block th:replace="~{fragments/header :: header('fairs')}"></th:block>
+
+    <div class="container mt-4">
+        <a href="/fairs" class="btn btn-outline-secondary btn-sm mb-3">&larr; 返回列表</a>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 th:text="${fair.title}">招聘会名称</h3>
+                <p>时间: <span th:text="${#temporals.format(fair.startTime, 'yyyy-MM-dd HH:mm')}"></span>
+                   ~ <span th:text="${#temporals.format(fair.endTime, 'yyyy-MM-dd HH:mm')}"></span></p>
+                <p>地点: <span th:text="${fair.location}">地点</span></p>
+                <p th:if="${fair.description}" th:text="${fair.description}"></p>
+            </div>
+        </div>
+
+        <h4 class="mb-3">参会企业（<span th:text="${#lists.size(companies)}">0</span>家）</h4>
+
+        <div th:if="${companies.isEmpty()}" class="alert alert-info">暂无企业报名</div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3" th:each="c : ${companies}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${c.companyName}">企业名称</h5>
+                        <p class="card-text text-muted" th:text="${c.industry}">行业</p>
+                        <p class="card-text">联系人: <span th:text="${c.contactName}"></span></p>
+                        <hr>
+                        <h6>招聘岗位</h6>
+                        <ul>
+                            <li th:each="pos : ${c.positions}">
+                                <strong th:text="${pos.title}">岗位</strong>
+                                <span th:if="${pos.headcount}">（招<span th:text="${pos.headcount}"></span>人）</span>
+                                <span th:if="${pos.education}" class="text-muted"> - <span th:text="${pos.education}"></span></span>
+                                <span th:if="${pos.salaryRange}" class="text-success"> - <span th:text="${pos.salaryRange}"></span></span>
+                                <span th:if="${pos.workCity}" class="text-muted"> - <span th:text="${pos.workCity}"></span></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5"><hr><p class="text-center text-muted">Spring Boot + MyBatis + Thymeleaf</p></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

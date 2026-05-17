@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新建招聘会 - 管理后台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <th:block th:replace="~{fragments/admin-header :: adminHeader('jobFairs')}"></th:block>
+    <div class="container mt-4" style="max-width:600px">
+        <h3>新建招聘会</h3>
+        <form method="post" action="/admin/job-fairs">
+            <div class="mb-3">
+                <label class="form-label">招聘会名称</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="form-label">开始时间</label>
+                    <input type="datetime-local" name="startTime" class="form-control" required>
+                </div>
+                <div class="col">
+                    <label class="form-label">结束时间</label>
+                    <input type="datetime-local" name="endTime" class="form-control" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">举办地点</label>
+                <input type="text" name="location" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">详细说明</label>
+                <textarea name="description" class="form-control" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">创建</button>
+            <a href="/admin/job-fairs" class="btn btn-outline-secondary">取消</a>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

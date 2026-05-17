@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>报名详情 - 管理后台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <th:block th:replace="~{fragments/admin-header :: adminHeader('registrations')}"></th:block>
+    <div class="container mt-4">
+        <a href="/admin/registrations" class="btn btn-outline-secondary btn-sm mb-3">&larr; 返回列表</a>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header"><h5 class="mb-0">企业信息</h5></div>
+                    <div class="card-body">
+                        <p><strong>企业名称:</strong> <span th:text="${reg.companyName}"></span></p>
+                        <p><strong>行业:</strong> <span th:text="${reg.industry}"></span></p>
+                        <p><strong>联系人:</strong> <span th:text="${reg.contactName}"></span></p>
+                        <p><strong>电话:</strong> <span th:text="${reg.contactPhone}"></span></p>
+                        <p><strong>邮箱:</strong> <span th:text="${reg.contactEmail}"></span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header"><h5 class="mb-0">报名信息</h5></div>
+                    <div class="card-body">
+                        <p><strong>招聘会:</strong> <span th:text="${reg.jobFairTitle}"></span></p>
+                        <p><strong>提交时间:</strong> <span th:text="${#temporals.format(reg.createTime, 'yyyy-MM-dd HH:mm')}"></span></p>
+                        <p><strong>状态:</strong>
+                            <span class="badge" th:classappend="${reg.status == 1} ? 'bg-success' : (${reg.status == 2} ? 'bg-danger' : 'bg-warning')"
+                                  th:text="${reg.status == 1} ? '已通过' : (${reg.status == 2} ? '已驳回' : '待审核')"></span>
+                        </p>
+                        <p th:if="${reg.rejectReason}"><strong>驳回原因:</strong> <span class="text-danger" th:text="${reg.rejectReason}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 岗位列表 -->
+        <div class="card mb-4" th:if="${!#lists.isEmpty(reg.positions)}">
+            <div class="card-header"><h5 class="mb-0">招聘岗位</h5></div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead><tr><th>岗位</th><th>人数</th><th>学历</th><th>薪资</th><th>城市</th></tr></thead>
+                    <tbody>
+                        <tr th:each="p : ${reg.positions}">
+                            <td th:text="${p.title}"></td>
+                            <td th:text="${p.headcount}"></td>
+                            <td th:text="${p.education}"></td>
+                            <td th:text="${p.salaryRange}"></td>
+                            <td th:text="${p.workCity}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 审核操作 -->
+        <div class="card" th:if="${reg.status == 0}">
+            <div class="card-header"><h5 class="mb-0">审核操作</h5></div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-auto">
+                        <form method="post" th:action="@{/admin/registrations/{id}/audit(id=${reg.id})}" class="d-inline">
+                            <input type="hidden" name="status" value="1">
+                            <button type="submit" class="btn btn-success">通过</button>
+                        </form>
+                    </div>
+                    <div class="col">
+                        <form method="post" th:action="@{/admin/registrations/{id}/audit(id=${reg.id})}">
+                            <input type="hidden" name="status" value="2">
+                            <div class="input-group">
+                                <input type="text" name="rejectReason" class="form-control"
+                                       placeholder="驳回原因（必填）" required>
+                                <button type="submit" class="btn btn-danger">驳回</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-5"><hr><p class="text-center text-muted">Spring Boot + MyBatis + Thymeleaf</p></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
