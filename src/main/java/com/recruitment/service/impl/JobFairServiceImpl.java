@@ -6,6 +6,8 @@ import com.recruitment.entity.JobFair;
 import com.recruitment.mapper.JobFairMapper;
 import com.recruitment.service.JobFairService;
 import com.recruitment.vo.JobFairListVO;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
@@ -19,6 +21,7 @@ public class JobFairServiceImpl implements JobFairService {
     private JobFairMapper jobFairMapper;
 
     @Override
+    @CacheEvict(value = "jobFairs", allEntries = true)
     public void create(JobFairCreateDTO dto) {
         if (dto.getEndTime().isBefore(dto.getStartTime())) {
             throw new BusinessException("结束时间不能早于开始时间");
@@ -35,6 +38,7 @@ public class JobFairServiceImpl implements JobFairService {
     }
 
     @Override
+    @CacheEvict(value = "jobFairs", allEntries = true)
     public void update(Long id, JobFairCreateDTO dto) {
         JobFair jobFair = jobFairMapper.findById(id);
         if (jobFair == null) {
@@ -53,6 +57,7 @@ public class JobFairServiceImpl implements JobFairService {
     }
 
     @Override
+    @Cacheable(value = "jobFairs", key = "'published'")
     public List<JobFairListVO> listPublished() {
         List<JobFair> list = jobFairMapper.findPublished();
         return toVOList(list);
