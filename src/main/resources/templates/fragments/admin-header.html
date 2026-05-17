@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <th:block th:fragment="adminHeader(currentPage)">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="/admin/dashboard">管理后台</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
@@ -23,12 +23,8 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/fairs">前台首页</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/logout">退出</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/fairs">前台首页</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/logout">退出</a></li>
                 </ul>
             </div>
         </div>
