@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ============================================================ -->
+<!-- [编写顺序 4.4] RegistrationMapper XML — 最复杂的 SQL -->
+<!-- [前置] RegistrationMapper 接口已写好 -->
+<!-- [思维] 这个 XML 有三个高级知识点： -->
+<!--        1. 动态 SQL（<if><where>）：根据前端传参灵活拼接条件 -->
+<!--        2. LEFT JOIN 多表联查：一次 SQL 拿全信息，避免 N+1 查询 -->
+<!--        3. 多个 resultMap：查 Registration 用一个，查详情用另一个 -->
+<!-- ============================================================ -->
+<mapper namespace="com.recruitment.mapper.RegistrationMapper">
+
+    <!-- [顺序 4.4.1] resultMap 1: 查 Registration 自身 -->
+    <resultMap id="registrationMap" type="Registration">
+        <id column="id" property="id"/>
+        <result column="company_id" property="companyId"/>
+        <result column="job_fair_id" property="jobFairId"/>
+        <result column="booth_number" property="boothNumber"/>
+        <result column="reject_reason" property="rejectReason"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- [顺序 4.4.2] resultMap 2: 查报名详情（JOIN 三张表的结果）
+                     type 不是 Registration，而是 RegistrationDetailVO
+                     因为 JOIN 出来的结果比 registration 表多几个字段 -->
+    <resultMap id="detailMap" type="com.recruitment.vo.RegistrationDetailVO">
+        <id column="id" property="id"/>
+        <result column="company_id" property="companyId"/>
+        <result column="company_name" property="companyName"/>
+        <result column="industry" property="industry"/>
+        <result column="contact_name" property="contactName"/>
+        <result column="contact_phone" property="contactPhone"/>
+        <result column="contact_email" property="contactEmail"/>
+        <result column="job_fair_id" property="jobFairId"/>
+        <result column="job_fair_title" property="jobFairTitle"/>
+        <result column="booth_number" property="boothNumber"/>
+        <result column="status" property="status"/>
+        <result column="reject_reason" property="rejectReason"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+
+    <!-- [顺序 4.4.3] 简单 SQL：插入报名 -->
+    <insert id="insert" parameterType="Registration" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO registration (company_id, job_fair_id, booth_number)
+        VALUES (#{companyId}, #{jobFairId}, #{boothNumber})
+    </insert>
+
+
+    <!-- [顺序 4.4.4] 简单 SQL：按 ID 查 -->
+    <select id="findById" resultMap="registrationMap">
+        SELECT * FROM registration WHERE id = #{id}
+    </select>
+
+
+    <!-- [顺序 4.4.5] 简单 SQL：按企业+招聘会查 -->
+    <select id="findByCompanyAndFair" resultMap="registrationMap">
+        SELECT * FROM registration
+        WHERE company_id = #{companyId} AND job_fair_id = #{jobFairId}
+    </select>
+
+
+    <!-- ============================================================
+    [顺序 4.4.6] ★ 核心 SQL：分页查询报名列表
+         这里用到了三个关键技术：
+
+         1. LEFT JOIN：把三张表的数据拼成一行
+            registration LEFT JOIN company → 报名+企业信息
+            registration LEFT JOIN job_fair → 报名+招聘会信息
+            结果：一条记录里有企业名、行业、招聘会标题
+
+         2. <where> 动态标签：
+            - 如果所有 <if> 都不满足 → WHERE 不出现
+            - 如果第一个满足 → WHERE xxx
+            - 自动处理 AND 前缀
+
+         3. <if> 条件判断：
+            test="companyName != null and companyName != ''"
+            前端没传 companyName → 这个条件不拼进 SQL
+            前端传了 → 拼上 AND c.name LIKE '%xxx%'
+
+         4. LIMIT #{offset}, #{pageSize}：
+            offset = (pageNum - 1) * pageSize
+            第 1 页 LIMIT 0,10  第 2 页 LIMIT 10,10
+    ============================================================ -->
+    <select id="page" parameterType="com.recruitment.dto.RegistrationPageDTO" resultMap="detailMap">
+        SELECT
+            r.id, r.company_id, r.job_fair_id, r.booth_number,
+            r.status, r.reject_reason, r.create_time,
+            c.name AS company_name, c.industry, c.contact_name, c.contact_phone, c.contact_email,
+            jf.title AS job_fair_title
+        FROM registration r
+        LEFT JOIN company c ON r.company_id = c.id
+        LEFT JOIN job_fair jf ON r.job_fair_id = jf.id
+        <where>
+            <if test="companyName != null and companyName != ''">
+                AND c.name LIKE CONCAT('%', #{companyName}, '%')
+            </if>
+            <if test="jobFairId != null">
+                AND r.job_fair_id = #{jobFairId}
+            </if>
+            <if test="status != null">
+                AND r.status = #{status}
+            </if>
+        </where>
+        ORDER BY r.create_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+
+    <!-- [顺序 4.4.7] COUNT 查询：和分页查同样的 WHERE 条件 -->
+    <select id="count" parameterType="com.recruitment.dto.RegistrationPageDTO" resultType="long">
+        SELECT COUNT(*)
+        FROM registration r
+        LEFT JOIN company c ON r.company_id = c.id
+        LEFT JOIN job_fair jf ON r.job_fair_id = jf.id
+        <where>
+            <if test="companyName != null and companyName != ''">
+                AND c.name LIKE CONCAT('%', #{companyName}, '%')
+            </if>
+            <if test="jobFairId != null">
+                AND r.job_fair_id = #{jobFairId}
+            </if>
+            <if test="status != null">
+                AND r.status = #{status}
+            </if>
+        </where>
+    </select>
+
+
+    <!-- [顺序 4.4.8] 审核更新：只改 status 和 reject_reason -->
+    <update id="updateStatus">
+        UPDATE registration
+        SET status = #{status}, reject_reason = #{rejectReason}
+        WHERE id = #{id}
+    </update>
+
+
+    <!-- [顺序 4.4.9] 学生端：查某场招聘会已通过的报名
+                     只查 status=1（已通过）的记录
+                     待审核和已驳回的不给学生看 -->
+    <select id="findByJobFairId" resultMap="detailMap">
+        SELECT
+            r.id, r.company_id, r.job_fair_id, r.booth_number,
+            r.status, r.reject_reason, r.create_time,
+            c.name AS company_name, c.industry, c.contact_name, c.contact_phone, c.contact_email,
+            jf.title AS job_fair_title
+        FROM registration r
+        LEFT JOIN company c ON r.company_id = c.id
+        LEFT JOIN job_fair jf ON r.job_fair_id = jf.id
+        WHERE r.job_fair_id = #{jobFairId} AND r.status = 1
+        ORDER BY r.create_time DESC
+    </select>
+
+</mapper>
+
+<!-- [状态] RegistrationMapper XML 完成 -->
+<!-- [思维] 这个文件体现了 MyBatis 的核心优势：
+         SQL 完全透明，你知道它执行的每一条 SQL
+         动态条件用 XML 标签而不是 Java 里拼字符串
+         JOIN 查询的结果用专门的 VO 类接收
+         这是国内大厂大量使用 MyBatis 的核心原因 -->

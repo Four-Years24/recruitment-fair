@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ============================================================ -->
+<!-- [编写顺序 4.2] 第一个 Mapper XML -->
+<!-- [前置] AdminMapper.java 接口已写好 → 现在写 SQL 实现 -->
+<!-- [思维] namespace 必须和 Mapper 接口的全限定类名一致 -->
+<!--        这样 MyBatis 才能把接口方法和 SQL 语句对应上 -->
+<!-- [思维] resultMap 的作用： -->
+<!--        数据库列名(name) 和 Java属性(name) 一样 → 自动映射 -->
+<!--        数据库列名(real_name) 和 Java属性(realName) 不一样 → 手动映射 -->
+<!--        这里显式声明了 real_name→realName 和 create_time→createTime -->
+<!--        username 和 password 没写是因为列名和属性名一致，自动映射 -->
+<!-- ============================================================ -->
+<mapper namespace="com.recruitment.mapper.AdminMapper">
+
+    <!-- [顺序 4.2.1] 先写 resultMap，定义数据库列和 Java 属性的映射关系 -->
+    <resultMap id="adminMap" type="Admin">
+        <id column="id" property="id"/>
+        <result column="real_name" property="realName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- [顺序 4.2.2] 第一个 SQL：根据用户名查管理员 -->
+    <!--             #{username} 是 MyBatis 的参数占位符 -->
+    <!--             框架自动从方法参数 AdminMapper.findByUsername(String username) 取值 -->
+    <!--             等同于 PreparedStatement 的 ? 占位符，防 SQL 注入 -->
+    <select id="findByUsername" resultMap="adminMap">
+        SELECT * FROM admin WHERE username = #{username}
+    </select>
+
+    <!-- [顺序 4.2.3] 第二个 SQL：插入管理员 -->
+    <!--             useGeneratedKeys="true"：用数据库自增主键 -->
+    <!--             keyProperty="id"：插入后自动把生成的 ID 回填到 Admin 对象的 id 属性 -->
+    <!--             这样 insert(admin) 之后，admin.getId() 就有值了 -->
+    <insert id="insert" parameterType="Admin" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO admin (username, password, real_name)
+        VALUES (#{username}, #{password}, #{realName})
+    </insert>
+
+</mapper>
+
+<!-- [状态] AdminMapper 完整（接口 + XML） -->
+<!-- [下一步] 回到 AdminMapper.java 检查接口方法 -->
+<!--         → 确认 findById 和 insert 方法名与 XML 的 id 一致 -->
+<!--         → 同样的流程完成其他 4 个 Mapper： -->
+<!--            CompanyMapper(接口) → CompanyMapper.xml → -->
+<!--            JobFairMapper(接口)  → JobFairMapper.xml  → -->
+<!--            RegistrationMapper    → RegistrationMapper.xml → -->
+<!--            PositionMapper        → PositionMapper.xml -->
+<!--         → 全部 Mapper 完成后进入 Phase 5：Service 层 -->

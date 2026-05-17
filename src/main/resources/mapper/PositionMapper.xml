@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.recruitment.mapper.PositionMapper">
+
+    <resultMap id="positionMap" type="Position">
+        <id column="id" property="id"/>
+        <result column="registration_id" property="registrationId"/>
+        <result column="major_require" property="majorRequire"/>
+        <result column="salary_range" property="salaryRange"/>
+        <result column="work_city" property="workCity"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="batchInsert">
+        INSERT INTO position (registration_id, title, headcount, education,
+            major_require, salary_range, work_city, description)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.registrationId}, #{item.title}, #{item.headcount}, #{item.education},
+             #{item.majorRequire}, #{item.salaryRange}, #{item.workCity}, #{item.description})
+        </foreach>
+    </insert>
+
+    <select id="findByRegistrationId" resultMap="positionMap">
+        SELECT * FROM position WHERE registration_id = #{registrationId}
+    </select>
+
+    <delete id="deleteByRegistrationId">
+        DELETE FROM position WHERE registration_id = #{registrationId}
+    </delete>
+</mapper>

@@ -1,0 +1,15 @@
+# IDE 配置 — 每个人 IDEA 设置不同，不应入库
+.idea/
+
+# Maven 编译产物 — mvn compile 就能重新生成
+target/
+
+# 临时测试 JSON 文件
+test_*.json
+
+# MySQL 修复脚本（一次性临时文件）
+fix_mysql_user.sql
+
+# 系统文件
+.DS_Store
+Thumbs.db

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.recruitment.mapper.CompanyMapper">
+
+    <resultMap id="companyMap" type="Company">
+        <id column="id" property="id"/>
+        <result column="contact_name" property="contactName"/>
+        <result column="contact_phone" property="contactPhone"/>
+        <result column="contact_email" property="contactEmail"/>
+        <result column="license_url" property="licenseUrl"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="Company" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO company (name, industry, scale, nature, address,
+            contact_name, contact_phone, contact_email, license_url, description)
+        VALUES (#{name}, #{industry}, #{scale}, #{nature}, #{address},
+            #{contactName}, #{contactPhone}, #{contactEmail}, #{licenseUrl}, #{description})
+    </insert>
+
+    <select id="findById" resultMap="companyMap">
+        SELECT * FROM company WHERE id = #{id}
+    </select>
+
+    <select id="findByName" resultMap="companyMap">
+        SELECT * FROM company WHERE name = #{name}
+    </select>
+
+    <update id="update" parameterType="Company">
+        UPDATE company
+        SET name = #{name}, industry = #{industry}, scale = #{scale},
+            nature = #{nature}, address = #{address},
+            contact_name = #{contactName}, contact_phone = #{contactPhone},
+            contact_email = #{contactEmail}, license_url = #{licenseUrl},
+            description = #{description}
+        WHERE id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,115 @@
+{
+	"info": {
+		"name": "校园招聘会系统",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1.管理员登录",
+			"request": {
+				"method": "POST",
+				"header": [{"key": "Content-Type", "value": "application/json"}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"admin\", \"password\": \"admin123\"}"
+				},
+				"url": {"raw": "http://localhost:8080/api/admin/login"}
+			}
+		},
+		{
+			"name": "2.创建招聘会",
+			"request": {
+				"method": "POST",
+				"header": [{"key": "Content-Type", "value": "application/json"}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"title\": \"2026届春季校园招聘会\", \"startTime\": \"2026-06-01T09:00:00\", \"endTime\": \"2026-06-01T17:00:00\", \"location\": \"学校体育馆\", \"description\": \"面向2026届毕业生的综合招聘会\"}"
+				},
+				"url": {"raw": "http://localhost:8080/api/admin/job-fair"}
+			}
+		},
+		{
+			"name": "3.学生浏览招聘会",
+			"request": {
+				"method": "GET",
+				"url": {"raw": "http://localhost:8080/api/job-fair/list"}
+			}
+		},
+		{
+			"name": "4.学生看招聘会详情",
+			"request": {
+				"method": "GET",
+				"url": {"raw": "http://localhost:8080/api/job-fair/1"}
+			}
+		},
+		{
+			"name": "5.企业报名(含岗位)",
+			"request": {
+				"method": "POST",
+				"header": [{"key": "Content-Type", "value": "application/json"}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"companyName\": \"字节跳动\", \"industry\": \"互联网\", \"scale\": \"1000+\", \"nature\": \"私企\", \"address\": \"深圳南山区\", \"contactName\": \"张三\", \"contactPhone\": \"13800138000\", \"contactEmail\": \"hr@bytedance.com\", \"jobFairId\": 1, \"positions\": [{\"title\": \"Java后端开发\", \"headcount\": 5, \"education\": \"本科\", \"majorRequire\": \"计算机相关\", \"salaryRange\": \"15K-25K\", \"workCity\": \"深圳\", \"description\": \"Spring Boot微服务开发\"}]}"
+				},
+				"url": {"raw": "http://localhost:8080/api/company/register"}
+			}
+		},
+		{
+			"name": "6.管理员查报名列表",
+			"request": {
+				"method": "GET",
+				"url": {
+					"raw": "http://localhost:8080/api/admin/registration/page",
+					"query": [
+						{"key": "pageNum", "value": "1"},
+						{"key": "pageSize", "value": "10"}
+					]
+				}
+			}
+		},
+		{
+			"name": "7.管理员看报名详情",
+			"request": {
+				"method": "GET",
+				"url": {"raw": "http://localhost:8080/api/admin/registration/1"}
+			}
+		},
+		{
+			"name": "8.审核通过",
+			"request": {
+				"method": "PUT",
+				"header": [{"key": "Content-Type", "value": "application/json"}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"status\": 1}"
+				},
+				"url": {"raw": "http://localhost:8080/api/admin/registration/1/audit"}
+			}
+		},
+		{
+			"name": "9.审核驳回",
+			"request": {
+				"method": "PUT",
+				"header": [{"key": "Content-Type", "value": "application/json"}],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"status\": 2, \"rejectReason\": \"营业执照信息不完整\"}"
+				},
+				"url": {"raw": "http://localhost:8080/api/admin/registration/2/audit"}
+			}
+		},
+		{
+			"name": "10.导出报名CSV",
+			"request": {
+				"method": "GET",
+				"url": {
+					"raw": "http://localhost:8080/api/admin/registration/export",
+					"query": [
+						{"key": "pageNum", "value": "1"},
+						{"key": "pageSize", "value": "10"}
+					]
+				}
+			}
+		}
+	]
+}

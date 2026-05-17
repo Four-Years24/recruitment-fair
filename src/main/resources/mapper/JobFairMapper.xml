@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.recruitment.mapper.JobFairMapper">
+
+    <resultMap id="jobFairMap" type="JobFair">
+        <id column="id" property="id"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="JobFair" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO job_fair (title, start_time, end_time, location, description, status)
+        VALUES (#{title}, #{startTime}, #{endTime}, #{location}, #{description}, #{status})
+    </insert>
+
+    <select id="findById" resultMap="jobFairMap">
+        SELECT * FROM job_fair WHERE id = #{id}
+    </select>
+
+    <select id="findPublished" resultMap="jobFairMap">
+        SELECT * FROM job_fair WHERE status = 1 ORDER BY start_time DESC
+    </select>
+
+    <select id="findAll" resultMap="jobFairMap">
+        SELECT * FROM job_fair ORDER BY create_time DESC
+    </select>
+
+    <update id="update" parameterType="JobFair">
+        UPDATE job_fair
+        SET title = #{title}, start_time = #{startTime}, end_time = #{endTime},
+            location = #{location}, description = #{description}, status = #{status}
+        WHERE id = #{id}
+    </update>
+</mapper>
