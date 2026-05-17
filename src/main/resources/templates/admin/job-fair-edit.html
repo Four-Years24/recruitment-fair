@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑招聘会 - 管理后台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <th:block th:replace="~{fragments/admin-header :: adminHeader('jobFairs')}"></th:block>
+    <div class="container mt-4" style="max-width:600px">
+        <h3>编辑招聘会</h3>
+
+        <!-- 编辑基本信息 -->
+        <form method="post" th:action="@{/admin/job-fairs/{id}(id=${fair.id})}" class="mb-4">
+            <div class="mb-3">
+                <label class="form-label">招聘会名称</label>
+                <input type="text" name="title" class="form-control" th:value="${fair.title}" required>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="form-label">开始时间</label>
+                    <input type="datetime-local" name="startTime" class="form-control"
+                           th:value="${#temporals.format(fair.startTime, 'yyyy-MM-dd') + 'T' + #temporals.format(fair.startTime, 'HH:mm')}" required>
+                </div>
+                <div class="col">
+                    <label class="form-label">结束时间</label>
+                    <input type="datetime-local" name="endTime" class="form-control"
+                           th:value="${#temporals.format(fair.endTime, 'yyyy-MM-dd') + 'T' + #temporals.format(fair.endTime, 'HH:mm')}" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">举办地点</label>
+                <input type="text" name="location" class="form-control" th:value="${fair.location}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">详细说明</label>
+                <textarea name="description" class="form-control" rows="3" th:text="${fair.description}"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">状态</label>
+                <select name="status" class="form-select" disabled>
+                    <option value="0" th:selected="${fair.status == 0}">草稿</option>
+                    <option value="1" th:selected="${fair.status == 1}">已发布</option>
+                    <option value="2" th:selected="${fair.status == 2}">已结束</option>
+                </select>
+                <div class="form-text">状态请在列表页通过「发布/结束/退回草稿」按钮修改</div>
+            </div>
+            <button type="submit" class="btn btn-primary">保存修改</button>
+            <a href="/admin/job-fairs" class="btn btn-outline-secondary">取消</a>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

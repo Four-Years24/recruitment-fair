@@ -99,6 +99,31 @@ public class AdminPageController {
         return "redirect:/admin/job-fairs";
     }
 
+    @GetMapping("/job-fairs/{id}/edit")
+    public String editJobFairForm(@PathVariable Long id, Model model, HttpSession session) {
+        if (session.getAttribute("adminUser") == null) return "redirect:/admin/login";
+        model.addAttribute("fair", jobFairService.getById(id));
+        return "admin/job-fair-edit";
+    }
+
+    @PostMapping("/job-fairs/{id}")
+    public String updateJobFair(@PathVariable Long id, JobFairCreateDTO dto,
+                                HttpSession session, RedirectAttributes redirect) {
+        if (session.getAttribute("adminUser") == null) return "redirect:/admin/login";
+        jobFairService.update(id, dto);
+        redirect.addFlashAttribute("success", "招聘会更新成功");
+        return "redirect:/admin/job-fairs";
+    }
+
+    @PostMapping("/job-fairs/{id}/status")
+    public String updateJobFairStatus(@PathVariable Long id, Integer status,
+                                      HttpSession session, RedirectAttributes redirect) {
+        if (session.getAttribute("adminUser") == null) return "redirect:/admin/login";
+        jobFairService.updateStatus(id, status);
+        redirect.addFlashAttribute("success", "状态已更新");
+        return "redirect:/admin/job-fairs";
+    }
+
     // ==================== 报名管理 ====================
     @GetMapping("/registrations")
     public String registrations(Model model, HttpSession session,

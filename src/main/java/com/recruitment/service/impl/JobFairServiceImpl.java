@@ -57,6 +57,17 @@ public class JobFairServiceImpl implements JobFairService {
     }
 
     @Override
+    @CacheEvict(value = "jobFairs", allEntries = true)
+    public void updateStatus(Long id, Integer status) {
+        JobFair jobFair = jobFairMapper.findById(id);
+        if (jobFair == null) {
+            throw new BusinessException("招聘会不存在");
+        }
+        jobFair.setStatus(status);
+        jobFairMapper.update(jobFair);
+    }
+
+    @Override
     @Cacheable(value = "jobFairs", key = "'published'")
     public List<JobFairListVO> listPublished() {
         List<JobFair> list = jobFairMapper.findPublished();

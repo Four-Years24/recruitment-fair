@@ -14,6 +14,9 @@ public interface JobFairService {
 
     void update(Long id, JobFairCreateDTO dto);
 
+    /** 修改招聘会状态（发布/结束/回退草稿） */
+    void updateStatus(Long id, Integer status);
+
     /** 学生端：查看所有已发布的招聘会 */
     List<JobFairListVO> listPublished();
 

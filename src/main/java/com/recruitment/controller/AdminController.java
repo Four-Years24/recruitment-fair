@@ -107,6 +107,18 @@ public class AdminController {
         return Result.ok(jobFairService.listAll());
     }
 
+    @Operation(summary = "修改招聘会状态", description = "status: 0草稿 1已发布 2已结束")
+    @PutMapping("/job-fair/{id}/status")
+    public Result<?> updateJobFairStatus(@PathVariable Long id,
+                                         @RequestBody Map<String, Integer> body) {
+        Integer status = body.get("status");
+        if (status == null || status < 0 || status > 2) {
+            return Result.fail("状态值不合法（0/1/2）");
+        }
+        jobFairService.updateStatus(id, status);
+        return Result.ok();
+    }
+
 
     // ==================== 报名管理 ====================
     @Operation(summary = "报名分页查询", description = "可按企业名、招聘会ID、审核状态筛选")

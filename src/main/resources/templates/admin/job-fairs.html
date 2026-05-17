@@ -2,7 +2,6 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>招聘会管理 - 管理后台</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -14,12 +13,15 @@
             <a href="/admin/job-fairs/new" class="btn btn-primary">新建招聘会</a>
         </div>
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-        <table class="table table-striped table-hover">
-            <thead><tr><th>ID</th><th>名称</th><th>时间</th><th>地点</th><th>状态</th></tr></thead>
+
+        <table class="table table-striped table-hover align-middle">
+            <thead><tr><th>ID</th><th>名称</th><th>时间</th><th>地点</th><th>状态</th><th>操作</th></tr></thead>
             <tbody>
                 <tr th:each="f : ${fairs}">
                     <td th:text="${f.id}"></td>
-                    <td th:text="${f.title}"></td>
+                    <td>
+                        <a th:href="@{/admin/job-fairs/{id}/edit(id=${f.id})}" th:text="${f.title}"></a>
+                    </td>
                     <td>
                         <span th:text="${#temporals.format(f.startTime, 'MM-dd HH:mm')}"></span>
                         ~ <span th:text="${#temporals.format(f.endTime, 'MM-dd HH:mm')}"></span>
@@ -28,6 +30,29 @@
                     <td>
                         <span class="badge" th:classappend="${f.status == 1} ? 'bg-success' : (${f.status == 2} ? 'bg-secondary' : 'bg-warning')"
                               th:text="${f.status == 1} ? '已发布' : (${f.status == 2} ? '已结束' : '草稿')"></span>
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <!-- 编辑 -->
+                            <a class="btn btn-outline-secondary"
+                               th:href="@{/admin/job-fairs/{id}/edit(id=${f.id})}">编辑</a>
+                            <!-- 状态切换按钮 -->
+                            <form method="post" th:action="@{/admin/job-fairs/{id}/status(id=${f.id})}" class="d-inline"
+                                  th:if="${f.status == 0}">
+                                <input type="hidden" name="status" value="1">
+                                <button type="submit" class="btn btn-outline-success">发布</button>
+                            </form>
+                            <form method="post" th:action="@{/admin/job-fairs/{id}/status(id=${f.id})}" class="d-inline"
+                                  th:if="${f.status == 1}">
+                                <input type="hidden" name="status" value="2">
+                                <button type="submit" class="btn btn-outline-secondary">结束</button>
+                            </form>
+                            <form method="post" th:action="@{/admin/job-fairs/{id}/status(id=${f.id})}" class="d-inline"
+                                  th:if="${f.status == 2}">
+                                <input type="hidden" name="status" value="0">
+                                <button type="submit" class="btn btn-outline-warning">退回草稿</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             </tbody>
