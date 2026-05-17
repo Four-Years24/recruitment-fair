@@ -11,6 +11,7 @@ import com.recruitment.service.JobFairService;
 import com.recruitment.service.RegistrationService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -157,5 +158,16 @@ public class AdminPageController {
         registrationService.audit(id, dto);
         redirect.addFlashAttribute("success", dto.getStatus() == 1 ? "已通过" : "已驳回");
         return "redirect:/admin/registrations/" + id;
+    }
+
+    @GetMapping("/registrations/export")
+    public void exportRegistrations(RegistrationPageDTO dto, HttpSession session,
+                                     HttpServletResponse response) {
+        if (session.getAttribute("adminUser") == null) {
+            response.setStatus(302);
+            response.setHeader("Location", "/admin/login");
+            return;
+        }
+        registrationService.export(dto, response);
     }
 }
