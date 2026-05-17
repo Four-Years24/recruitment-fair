@@ -162,13 +162,17 @@ public class RegistrationServiceImpl implements RegistrationService {
                 row.createCell(8).setCellValue(vo.getCreateTime() != null ? vo.getCreateTime().toString() : "");
             }
 
+            // 设置响应头 — 必须在 write 之前
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            String fileName = URLEncoder.encode("报名数据.xlsx", StandardCharsets.UTF_8.name());
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setCharacterEncoding("UTF-8");
+            // RFC 5987: filename*=UTF-8''xxx 支持中文文件名
+            String encoded = URLEncoder.encode("报名数据.xlsx", StandardCharsets.UTF_8)
+                    .replace("+", "%20");
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=\"recruitment-data.xlsx\"; filename*=UTF-8''" + encoded);
 
-            OutputStream os = response.getOutputStream();
-            workbook.write(os);
-            os.flush();
+            workbook.write(response.getOutputStream());
+            response.getOutputStream().flush();
         } catch (Exception e) {
             throw new BusinessException("导出失败：" + e.getMessage());
         }
